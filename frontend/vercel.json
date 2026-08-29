@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://agri-tech-straw-ledger.onrender.com/api/$1"
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}

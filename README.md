@@ -187,14 +187,14 @@ We will deploy this manually as a standard free "Web Service".
 7. Render will deploy your API and provide a public URL (e.g. `https://straw-ledger-backend.onrender.com`).
 
 ### 3. Frontend (Vercel)
-The frontend is deployed via Vercel, utilizing the `frontend/public/vercel.json` file to safely route API requests to your backend without dealing with CORS.
+The frontend is deployed via Vercel, utilizing `frontend/vercel.json` to serve the tracked `public` directory and safely route API requests to the Render backend without requiring browser CORS access.
 
-1. Open `frontend/public/vercel.json` and replace `YOUR_RAILWAY_URL_HERE` with your actual Render backend URL (e.g., `straw-ledger-backend.onrender.com`). **Do not include `https://` in the replacement if you leave the `https://` in the JSON, just the domain.**
-2. Commit and push this change to GitHub.
+1. Keep the Render URL in `frontend/vercel.json` aligned with your Render service URL.
+2. Commit and push the frontend changes to GitHub.
 3. Create a new project on [Vercel](https://vercel.com) and import your GitHub repository.
 4. Set the **Root Directory** to `frontend`.
-5. Set the **Output Directory** to `dist`.
-6. Click **Deploy**. Vercel will serve your static files and automatically proxy all `/api/*` requests to your Railway backend!
+5. Set the **Output Directory** to `public` (or let `frontend/vercel.json` provide this setting).
+6. Click **Deploy**. Vercel will serve your static files and automatically proxy all `/api/*` requests to your Render backend!
 
 ## Frontend — Setup & Run
 

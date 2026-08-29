@@ -2,13 +2,17 @@
    THE STRAW LEDGER — Frontend configuration
    Single source for API base URL and display constants.
    ============================================================ */
+const localHostnames = ['localhost', '127.0.0.1', '[::1]'];
+const isLocalFrontend = window.location.protocol === 'file:' || localHostnames.includes(window.location.hostname);
+
 window.STRAW_LEDGER_CONFIG = {
   /*
    * Base URL of the existing FastAPI backend.
-   * Leave '' for same-origin deployments, or set e.g. 'http://localhost:8000/api'.
+  * Hosted pages use the Vercel rewrite to reach Render. Local pages call the
+  * development backend directly.
    * Can be overridden at runtime via localStorage key STRAW_LEDGER_API_BASE.
    */
-  API_BASE_URL: 'http://127.0.0.1:8010/api/v1',
+  API_BASE_URL: isLocalFrontend ? 'http://127.0.0.1:8010/api/v1' : '/api/v1',
 
   /*
    * When true (and ONLY when the backend cannot be reached), the API layer
