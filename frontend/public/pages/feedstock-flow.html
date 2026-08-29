@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedstock Flow · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+</head>
+<body data-page="flow" data-group="Analytics" data-title="Feedstock Flow" data-short="Flow map"
+      data-subtitle="Plots, zones and facilities on one map">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="flowmap-layout">
+          <!-- Side panel -->
+          <aside class="flowmap-side">
+            <section class="card card--pad">
+              <div class="card__title" style="margin-bottom:10px">Map layers</div>
+              <div style="display:grid;gap:9px">
+                <label class="layer-toggle"><input type="checkbox" id="layerBatches" checked /> Straw batches / plots</label>
+                <label class="layer-toggle"><input type="checkbox" id="layerZones" checked /> Collection zones</label>
+                <label class="layer-toggle"><input type="checkbox" id="layerFacilities" checked /> Pyrolysis facilities</label>
+                <label class="layer-toggle"><input type="checkbox" id="layerFlow" checked /> Flow lines</label>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:14px">
+                <button class="btn btn--ghost btn--sm btn--block" id="fitBtn"><span id="fitIcon"></span> Fit network</button>
+                <button class="btn btn--ghost btn--sm" id="mapRefreshBtn" title="Reload map data"><span id="mapRefreshIcon"></span></button>
+              </div>
+            </section>
+
+            <section class="card card--pad" id="networkStats">
+              <div class="card__title" style="margin-bottom:8px">Network</div>
+              <div class="dlist" id="networkList">
+                <div class="dlist__row"><span class="dlist__k">Batches</span><span class="dlist__v skeleton" style="width:52px">&nbsp;</span></div>
+                <div class="dlist__row"><span class="dlist__k">Zones</span><span class="dlist__v skeleton" style="width:52px">&nbsp;</span></div>
+                <div class="dlist__row"><span class="dlist__k">Facilities</span><span class="dlist__v skeleton" style="width:52px">&nbsp;</span></div>
+                <div class="dlist__row"><span class="dlist__k">Straw volume</span><span class="dlist__v skeleton" style="width:52px">&nbsp;</span></div>
+              </div>
+            </section>
+
+            <section class="card card--pad" id="selectedPanel">
+              <div class="card__title" style="margin-bottom:8px">Selected entity</div>
+              <div id="selectedBody">
+                <p class="muted small">Click a marker on the map to inspect a batch, collection zone or facility.</p>
+              </div>
+            </section>
+          </aside>
+
+          <!-- Map -->
+          <section class="card" style="overflow:hidden">
+            <div class="map-wrap flowmap-map" style="border:none;border-radius:0 var(--r-lg) var(--r-lg) 0">
+              <div class="map-canvas" id="flowMap"></div>
+              <div class="map-legend">
+                <div class="map-legend__title">Legend</div>
+                <div class="map-legend__item"><span class="map-legend__swatch" style="background:var(--leaf-500)"></span> Straw batch / farmer plot</div>
+                <div class="map-legend__item"><span class="map-legend__swatch" style="background:var(--straw-500);border-radius:4px"></span> Collection zone hub</div>
+                <div class="map-legend__item"><span class="map-legend__swatch" style="background:var(--pine-900);border-radius:4px"></span> Pyrolysis facility</div>
+                <div class="map-legend__item"><span class="map-legend__line"></span> Plot → zone</div>
+                <div class="map-legend__item"><span class="map-legend__line map-legend__line--dashed"></span> Zone → facility</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/feedstock-flow.js"></script>
+</body>
+</html>

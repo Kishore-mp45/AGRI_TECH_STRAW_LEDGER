@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collection &amp; Routing · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+</head>
+<body data-page="routing" data-group="Analytics" data-title="Collection &amp; Routing" data-short="Routing"
+      data-subtitle="Geographic aggregation from plot to facility">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="grid routing-grid">
+          <!-- Left : selection + nearby results -->
+          <div style="display:grid;gap:16px;min-width:0">
+            <section class="card card--pad">
+              <div class="card__title" style="margin-bottom:4px">Selected plot</div>
+              <div class="section-sub" style="margin-bottom:12px">Pick a registered straw batch to run discovery.</div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label" for="routeBatchSelect">Straw batch</label>
+                <select class="form-control" id="routeBatchSelect"><option value="">Loading batches…</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:14px">
+                <label class="form-label" for="radiusInput">Search radius (km)</label>
+                <input class="form-control" id="radiusInput" type="number" min="1" max="200" step="1" />
+                <span class="form-hint">Configured discovery radius around the plot.</span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn--primary" id="findNearbyBtn"><span id="findIcon"></span> Find nearby batches</button>
+                <button class="btn btn--ghost" id="routeDetailBtn" disabled><span id="routeIcon"></span> View routing details</button>
+              </div>
+            </section>
+
+            <section class="card" id="plotCard">
+              <div class="card__head">
+                <div><div class="card__title">Plot information</div><div class="card__sub">Registered coordinates and batch data</div></div>
+                <span class="badge badge--leaf" id="plotStatus">—</span>
+              </div>
+              <div class="card__body" id="plotBody">
+                <div class="state-block">
+                  <div class="state-block__icon" id="plotEmptyIcon"></div>
+                  <h3>No plot selected</h3>
+                  <p>Choose a straw batch above — latitude, longitude and registration details will appear here.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card__head">
+                <div><div class="card__title">Nearby registered batches</div><div class="card__sub" id="nearbySub">Run discovery to populate</div></div>
+                <span class="badge badge--gold" id="nearbyCount">0 found</span>
+              </div>
+              <div class="card__body" id="nearbyBody">
+                <div class="state-block">
+                  <div class="state-block__icon" id="nearbyEmptyIcon"></div>
+                  <h3>No discovery yet</h3>
+                  <p>Select a batch and press “Find nearby batches” to group local straw within the radius.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right : aggregation + zone + facility + map -->
+          <div style="display:grid;gap:16px;min-width:0">
+            <section class="card">
+              <div class="card__head">
+                <div><div class="card__title">Local straw group</div><div class="card__sub">Aggregation inside the configured radius</div></div>
+                <span class="chip" id="radiusChip">radius —</span>
+              </div>
+              <div class="card__body" id="aggBody">
+                <div class="grid grid--kpi" style="grid-template-columns:repeat(3,1fr)">
+                  <div class="kpi kpi--pine"><div class="kpi__label" id="aggFarmersLbl">Farmers</div><div class="kpi__value" id="aggFarmers">—</div></div>
+                  <div class="kpi kpi--gold"><div class="kpi__label" id="aggBatchesLbl">Batches</div><div class="kpi__value" id="aggBatches">—</div></div>
+                  <div class="kpi kpi--sky"><div class="kpi__label" id="aggVolLbl">Straw volume</div><div class="kpi__value" id="aggVolume">—</div></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card entity-card entity-card--zone" id="zoneCard">
+              <div class="card__head">
+                <div><div class="card__title">Recommended collection zone</div><div class="card__sub" id="zoneSub">Nearest configured hub</div></div>
+                <span class="badge badge--gold" id="zoneBadge">—</span>
+              </div>
+              <div class="card__body" id="zoneBody">
+                <div class="state-block">
+                  <div class="state-block__icon" id="zoneEmptyIcon"></div>
+                  <h3>Awaiting discovery</h3>
+                  <p>The recommended zone and its aggregated volume appear after nearby-batch discovery.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="card entity-card entity-card--facility" id="facilityCard">
+              <div class="card__head">
+                <div><div class="card__title">Pyrolysis facility</div><div class="card__sub">Allocated to the collection zone</div></div>
+              </div>
+              <div class="card__body" id="facilityBody">
+                <p class="muted small">Facility allocation is shown once a zone is recommended.</p>
+              </div>
+            </section>
+
+            <section class="card" style="overflow:hidden">
+              <div class="map-wrap" style="border:none;border-radius:0 0 var(--r-lg) var(--r-lg)">
+                <div class="map-canvas" id="routeMap" style="min-height:340px"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Routing detail (shown on demand) -->
+        <div class="section-head" id="routingSection" style="display:none">
+          <div>
+            <span class="kicker">Routing details</span>
+            <h2 style="margin-top:6px" id="routingTitle">Route legs</h2>
+            <div class="section-sub" id="routingSub"></div>
+          </div>
+        </div>
+        <section class="card card--pad" id="routingBody" style="display:none">
+          <div class="route-legs" id="routeLegs"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/collection-routing.js"></script>
+</body>
+</html>

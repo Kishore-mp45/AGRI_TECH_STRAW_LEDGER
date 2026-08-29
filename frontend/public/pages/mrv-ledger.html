@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRV Ledger · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body data-page="mrv" data-group="Assurance" data-title="MRV Ledger" data-short="MRV"
+      data-subtitle="Auditable measurement, reporting &amp; verification records">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <!-- Status KPIs -->
+        <div class="grid grid--kpi mrv-stats" id="mrvStats">
+          <div class="skeleton skeleton--kpi"></div><div class="skeleton skeleton--kpi"></div>
+          <div class="skeleton skeleton--kpi"></div><div class="skeleton skeleton--kpi"></div>
+        </div>
+
+        <!-- Ledger table -->
+        <section class="card" style="margin-top:18px">
+          <div class="toolbar">
+            <div class="search-field">
+              <span id="searchIcon"></span>
+              <input class="form-control" id="mrvSearch" type="search" placeholder="Search MRV ID, batch, farmer, village…" autocomplete="off" />
+            </div>
+            <div class="form-group" style="width:170px;gap:0">
+              <select class="form-control" id="statusFilter">
+                <option value="all">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="verified">Verified</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="form-group" style="width:200px;gap:0">
+              <select class="form-control" id="zoneFilter"><option value="all">All collection zones</option></select>
+            </div>
+            <div class="spacer"></div>
+            <span class="small muted" id="resultCount"></span>
+            <button class="btn btn--ghost btn--sm" id="mrvRefreshBtn"><span id="mrvRefreshIcon"></span> Refresh</button>
+          </div>
+
+          <div class="table-wrap" id="mrvTableWrap">
+            <div class="skeleton skeleton--block" style="margin:18px"></div>
+          </div>
+          <div class="card__foot small muted" id="ledgerFoot">
+            Records are immutable once verified — status changes are appended with a timestamp.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Detail drawer -->
+  <div class="modal-backdrop" id="drawerBackdrop"></div>
+  <aside class="panel-drawer" id="mrvDrawer" aria-label="MRV record detail">
+    <div class="panel-drawer__head">
+      <div>
+        <div class="tiny muted" style="letter-spacing:0.1em;text-transform:uppercase;font-weight:700">MRV record</div>
+        <div class="mono" style="font-size:1.06rem;font-weight:600" id="drawerId">—</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="drawerStatus"></span>
+        <button class="icon-btn" id="drawerClose" aria-label="Close detail panel"><span id="drawerCloseIcon"></span></button>
+      </div>
+    </div>
+    <div class="panel-drawer__body" id="drawerBody"></div>
+    <div class="panel-drawer__foot" id="drawerFoot" style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn--primary" id="verifyBtn" style="flex:1"><span id="verifyIcon"></span> Mark verified</button>
+      <button class="btn btn--danger" id="rejectBtn" style="flex:1"><span id="rejectIcon"></span> Reject record</button>
+    </div>
+  </aside>
+
+  <!-- Verification note modal -->
+  <div class="modal-backdrop" id="noteModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+      <div class="modal__head">
+        <div class="card__title" id="noteModalTitle">Verification note</div>
+        <button class="icon-btn" id="noteModalClose" aria-label="Close"><span id="noteCloseIcon"></span></button>
+      </div>
+      <div class="modal__body">
+        <p class="small muted" style="margin-bottom:10px" id="noteModalText">Add a short note for the audit trail.</p>
+        <div class="form-group">
+          <label class="form-label" for="verifierNote">Note</label>
+          <textarea class="form-control" id="verifierNote" rows="3" placeholder="e.g. Weighbridge slips reconciled with batch registration…"></textarea>
+        </div>
+      </div>
+      <div class="modal__foot">
+        <button class="btn btn--ghost" id="noteCancel">Cancel</button>
+        <button class="btn btn--primary" id="noteConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/mrv-ledger.js"></script>
+</body>
+</html>

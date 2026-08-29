@@ -1,0 +1,84 @@
+/* ============================================================
+   THE STRAW LEDGER — Design Tokens
+   ============================================================ */
+:root {
+  /* ---- Palette : pine / moss / straw / mist ---- */
+  --pine-950: #0d2114;
+  --pine-900: #122b1b;
+  --pine-800: #173624;
+  --pine-700: #1f4a2e;
+
+  --moss-600: #2e5e3f;
+  --leaf-500: #3f7d53;
+  --leaf-400: #57976b;
+  --leaf-200: #bfdcc5;
+  --leaf-100: #e4f0e4;
+
+  --mist-050: #f5f7f1;
+  --mist-100: #edf0e7;
+  --mist-200: #e2e7da;
+  --paper:    #ffffff;
+
+  --ink-900: #182420;
+  --ink-700: #33463c;
+  --ink-500: #5a6e60;
+  --ink-400: #7e9184;
+
+  --line-200: #e3e8db;
+  --line-300: #d2dac9;
+
+  --straw-100: #faf1da;
+  --straw-300: #e9c87f;
+  --straw-400: #e0b45c;
+  --straw-500: #d9a441;
+  --straw-600: #c08a2b;
+  --straw-700: #97701f;
+
+  --rust-700: #8f3521;
+  --rust-600: #a6402c;
+  --rust-100: #f6e2db;
+
+  --sky-600: #2f6f8f;
+  --sky-100: #e0eef4;
+
+  /* ---- Type ---- */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  --fs-hero: clamp(2.4rem, 4.6vw, 3.9rem);
+  --fs-h1: clamp(1.7rem, 2.6vw, 2.3rem);
+  --fs-h2: 1.32rem;
+  --fs-h3: 1.06rem;
+  --fs-body: 0.925rem;
+  --fs-small: 0.8125rem;
+  --fs-tiny: 0.72rem;
+
+  /* ---- Geometry ---- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-pill: 999px;
+
+  --sidebar-w: 264px;
+  --topbar-h: 66px;
+  --content-max: 1400px;
+
+  /* ---- Depth ---- */
+  --sh-sm: 0 1px 2px rgba(18, 43, 27, 0.06);
+  --sh-md: 0 4px 14px rgba(18, 43, 27, 0.08);
+  --sh-lg: 0 14px 34px rgba(18, 43, 27, 0.13);
+  --sh-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 0.8, 0.32, 1);
+  --t-fast: 140ms var(--ease-out);
+  --t-med: 260ms var(--ease-out);
+
+  /* ---- Semantic status ---- */
+  --st-verified-bg: var(--leaf-100);   --st-verified-fg: #29523a; --st-verified-dot: #3f7d53;
+  --st-pending-bg:  #fbf0d3;           --st-pending-fg:  #7d5f14; --st-pending-dot:  #c08a2b;
+  --st-rejected-bg: var(--rust-100);   --st-rejected-fg: #8f3521; --st-rejected-dot: #a6402c;
+  --st-info-bg:     var(--sky-100);    --st-info-fg:     #275e7a; --st-info-dot:     #2f6f8f;
+}

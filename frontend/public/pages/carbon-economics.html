@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon &amp; Economics · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="carbon" data-group="Analytics" data-title="Carbon &amp; Economics" data-short="Carbon"
+      data-subtitle="Conversion math from straw to payout">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="section-head" style="margin-top:4px">
+          <div>
+            <span class="kicker">Calculation scope</span>
+            <h2 style="margin-top:6px">Choose what to price</h2>
+            <div class="section-sub">Batch-level detail, or the network aggregated to one number.</div>
+          </div>
+          <div class="tabs" id="scopeTabs" role="tablist">
+            <button class="tab is-active" data-scope="batch" role="tab">Batch level</button>
+            <button class="tab" data-scope="total" role="tab">All batches</button>
+          </div>
+        </div>
+
+        <div class="toolbar card" style="border-radius:var(--r-lg);margin-bottom:18px" id="scopeBar">
+          <div class="form-group" style="flex:1;min-width:230px;gap:4px">
+            <label class="form-label" for="batchSelect">Registered straw batch</label>
+            <select class="form-control" id="batchSelect"><option value="">Loading batches…</option></select>
+          </div>
+          <div class="form-group" style="width:170px;gap:4px" id="radiusNote">
+            <span class="form-label">Batch context</span>
+            <span class="chip" id="batchContext" style="justify-content:flex-start">—</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn--ghost btn--sm" id="recalcBtn" style="align-self:flex-end"><span id="recalcIcon"></span> Recalculate</button>
+        </div>
+
+        <div class="grid calc-grid">
+          <!-- Calculation flow -->
+          <section class="card card--pad">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div class="card__title">Calculation flow</div>
+              <span class="badge badge--leaf" id="flowScopeBadge">batch</span>
+            </div>
+            <div class="flow-chain" id="calcFlow">
+              <div class="skeleton skeleton--block"></div>
+            </div>
+            <div class="alert alert--info" style="margin-top:16px">
+              <span id="constIcon"></span>
+              <div class="small" id="constantsNote">System constants load with the calculation.</div>
+            </div>
+          </section>
+
+          <!-- Right column: KPIs + charts -->
+          <div style="display:grid;gap:16px;min-width:0">
+            <div class="calc-summary" id="calcSummary">
+              <div class="skeleton skeleton--block"></div><div class="skeleton skeleton--block"></div>
+              <div class="skeleton skeleton--block"></div><div class="skeleton skeleton--block"></div>
+            </div>
+
+            <section class="card">
+              <div class="card__head">
+                <div><div class="card__title">Economic breakdown</div><div class="card__sub">Where each rupee of gross value goes</div></div>
+              </div>
+              <div class="card__body">
+                <div class="chart-wrap" style="height:240px" id="econChartBox"><canvas id="econChart"></canvas></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card__head">
+                <div><div class="card__title">Mass &amp; carbon balance</div><div class="card__sub">Tonnes through each conversion stage</div></div>
+              </div>
+              <div class="card__body">
+                <div class="chart-wrap" style="height:220px" id="massChartBox"><canvas id="massChart"></canvas></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/carbon-economics.js"></script>
+</body>
+</html>

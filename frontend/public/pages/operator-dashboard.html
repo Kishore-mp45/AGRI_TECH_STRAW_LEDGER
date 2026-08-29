@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operator Dashboard · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+</head>
+<body data-page="dashboard" data-group="Operations" data-title="Operator Dashboard" data-short="Dashboard"
+      data-subtitle="Feedstock supply · routing · carbon · economics · MRV in one view">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <!-- Feedstock supply -->
+        <div class="section-head" style="margin-top:4px">
+          <div>
+            <span class="kicker">Feedstock supply</span>
+            <h2 style="margin-top:6px">Registered straw across the network</h2>
+            <div class="section-sub">Live totals from farmer registrations and zone assignments.</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" id="refreshBtn"><span id="refreshIcon"></span> Refresh</button>
+        </div>
+
+        <div class="grid grid--kpi dash-kpis" id="kpiRow">
+          <div class="skeleton skeleton--kpi"></div><div class="skeleton skeleton--kpi"></div>
+          <div class="skeleton skeleton--kpi"></div><div class="skeleton skeleton--kpi"></div>
+          <div class="skeleton skeleton--kpi"></div><div class="skeleton skeleton--kpi"></div>
+        </div>
+
+        <!-- Row 2 : feedstock chart + carbon/economics overview -->
+        <div class="grid dash-row2" style="margin-top:16px">
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">Straw volume by collection zone</div><div class="card__sub">Aggregated registered tonnes per hub</div></div>
+              <span class="badge badge--leaf">tonnes</span>
+            </div>
+            <div class="card__body"><div class="chart-wrap" style="height:280px" id="feedstockChartBox"><canvas id="feedstockChart"></canvas></div></div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">Carbon &amp; economics overview</div><div class="card__sub">Network-wide conversion potential</div></div>
+              <span class="badge badge--gold">all batches</span>
+            </div>
+            <div class="card__body" id="overviewBody">
+              <div class="skeleton skeleton--block"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Row 3 : routing + MRV -->
+        <div class="grid dash-row3" style="margin-top:16px">
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">Collection zone aggregation</div><div class="card__sub">Batches grouped per hub with facility allocation</div></div>
+              <a class="btn btn--ghost btn--sm" href="collection-routing.html">Routing details</a>
+            </div>
+            <div class="card__body" id="zoneAggBody"><div class="skeleton skeleton--block"></div></div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">MRV verification status</div><div class="card__sub">Audit pipeline health</div></div>
+              <a class="btn btn--ghost btn--sm" href="mrv-ledger.html">Open ledger</a>
+            </div>
+            <div class="card__body">
+              <div class="chart-wrap" style="height:210px" id="mrvChartBox"><canvas id="mrvChart"></canvas></div>
+              <div class="dlist" id="mrvLegendList" style="margin-top:12px"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Row 4 : geographic flow map -->
+        <div class="section-head">
+          <div>
+            <span class="kicker">Geographic feedstock flow</span>
+            <h2 style="margin-top:6px">Plot → zone → facility</h2>
+            <div class="section-sub">OpenFreeMap basemap · MapLibre GL rendering.</div>
+          </div>
+          <a class="btn btn--ghost btn--sm" href="feedstock-flow.html">Full flow map</a>
+        </div>
+        <section class="card" style="overflow:hidden">
+          <div class="map-wrap" style="border:none;border-radius:0">
+            <div class="map-canvas" id="dashMap" style="min-height:380px"></div>
+            <div class="map-legend" id="dashLegend"></div>
+          </div>
+        </section>
+
+        <!-- Row 5 : operational tables -->
+        <div class="grid grid--2" style="margin-top:16px">
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">Recent straw batches</div><div class="card__sub">Latest registrations across districts</div></div>
+              <a class="btn btn--ghost btn--sm" href="farmer-onboarding.html">New batch</a>
+            </div>
+            <div class="table-wrap" id="batchTableWrap"><div class="skeleton skeleton--block" style="margin:16px"></div></div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <div><div class="card__title">Pyrolysis facilities</div><div class="card__sub">Conversion capacity and allocation</div></div>
+              <span class="badge badge--info">capacity</span>
+            </div>
+            <div class="table-wrap" id="facilityTableWrap"><div class="skeleton skeleton--block" style="margin:16px"></div></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/operator-dashboard.js"></script>
+</body>
+</html>

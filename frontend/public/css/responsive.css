@@ -1,0 +1,81 @@
+/* ============================================================
+   THE STRAW LEDGER — Responsive behaviour
+   ============================================================ */
+
+@media (max-width: 1240px) {
+  .dash-kpis { grid-template-columns: repeat(3, 1fr); }
+  .stat-strip__card { grid-template-columns: repeat(3, 1fr); }
+  .stat-cell { border-bottom: 1px solid var(--line-200); }
+  .stat-cell:nth-child(3n) { border-right: none; }
+  .stat-cell:nth-child(n+4) { border-bottom: none; }
+  .module-grid { grid-template-columns: 1fr 1fr; }
+  .module-card--wide { grid-column: span 2; }
+}
+
+@media (max-width: 1120px) {
+  .calc-grid { grid-template-columns: 1fr; }
+  .routing-grid { grid-template-columns: 1fr; }
+  .flowmap-layout { grid-template-columns: 1fr; }
+  .flowmap-map { height: 62vh; }
+  .dash-row2, .dash-row3, .grid--3-1, .grid--1-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1023px) {
+  /* Sidebar becomes an off-canvas drawer */
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: min(300px, 86vw);
+    transform: translateX(-104%); transition: transform 0.32s var(--ease-out);
+  }
+  body.nav-open .sidebar { transform: none; box-shadow: var(--sh-lg); }
+  .nav-toggle { display: grid; }
+  .sidebar-backdrop { display: block; pointer-events: none; }
+  body.nav-open .sidebar-backdrop { pointer-events: auto; }
+  .onboard-grid { grid-template-columns: 1fr; }
+  .onboard-rail { position: static; }
+}
+
+@media (max-width: 900px) {
+  .hero__inner { grid-template-columns: 1fr; }
+  .landing-nav { display: none; }
+  .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+  .mrv-stats { grid-template-columns: repeat(2, 1fr); }
+  .calc-summary { grid-template-columns: 1fr 1fr; }
+  .module-grid { grid-template-columns: 1fr; }
+  .module-card--wide { grid-column: span 1; flex-direction: column; }
+}
+
+@media (max-width: 768px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .span-2 { grid-column: span 1; }
+  .ledger-row { grid-template-columns: 44px 1fr; grid-template-rows: auto auto; }
+  .ledger-row__num { grid-column: 1; }
+  .ledger-row__icon { display: none; }
+  .ledger-row h3 { grid-column: 2; }
+  .ledger-row p { grid-column: 2; }
+  .ledger-row__link { grid-column: 2; }
+  .topbar__subtitle { display: none; }
+  .content { padding-bottom: 96px; }
+}
+
+@media (max-width: 620px) {
+  .stat-strip__card { grid-template-columns: repeat(2, 1fr); }
+  .stat-cell { border-right: 1px solid var(--line-200) !important; border-bottom: 1px solid var(--line-200) !important; }
+  .stat-cell:nth-child(2n) { border-right: none !important; }
+  .stat-cell:nth-child(n+5) { border-bottom: none !important; }
+  .dash-kpis { grid-template-columns: 1fr 1fr; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .toolbar .search-field { min-width: 0; width: 100%; }
+  .tabs { width: 100%; }
+  .tab { flex: 1; text-align: center; }
+  .map-legend { bottom: 10px; left: 10px; min-width: 150px; }
+  .trace { flex-direction: column; }
+  .trace__arrow { transform: rotate(90deg); padding: 4px 0; justify-self: center; }
+}
+
+@media (max-width: 480px) {
+  .dash-kpis { grid-template-columns: 1fr; }
+  .mrv-stats { grid-template-columns: 1fr; }
+  .hero__ctas .btn { width: 100%; }
+  .calc-summary { grid-template-columns: 1fr; }
+}

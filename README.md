@@ -157,8 +157,38 @@ Apply the schema and seed data to your Supabase project:
 | 2     | Database Design & Data Foundation    | Done        |
 | 3     | FastAPI Backend Foundation           | Done        |
 | 4     | Business Feature APIs                | Upcoming    |
-| 5     | Frontend UI                          | Upcoming    |
-| 6     | Deployment (Vercel + Railway)        | Upcoming    |
+
+## Deployment
+
+The project is structured for easy deployment with **Vercel** (Frontend) and **Railway** (Backend).
+
+### 1. Database (Supabase)
+Your cloud database is already hosted on Supabase.
+1. Ensure your `schema.sql` and `seed.sql` have been applied via the Supabase SQL Editor.
+2. Go to **Project Settings -> Database** to get your connection string.
+
+### 2. Backend (Railway)
+The backend is configured via the `railway.toml` file at the root.
+
+1. Create a new project on [Railway](https://railway.app/).
+2. Connect your GitHub repository.
+3. Railway will automatically detect `railway.toml` and configure the build to run from the `backend/` directory using Nixpacks.
+4. **Environment Variables**: Add the following in the Railway dashboard (Variables tab):
+   - `DATABASE_URL` (Your Supabase postgresql connection string)
+   - `SUPABASE_URL`
+   - `SUPABASE_API_KEY`
+   - `APP_ENV=production`
+5. Railway will deploy your API and provide a public URL (e.g. `https://straw-ledger-backend.up.railway.app`).
+
+### 3. Frontend (Vercel)
+The frontend is deployed via Vercel, utilizing the `frontend/vercel.json` file to safely route API requests to your backend without dealing with CORS.
+
+1. Open `frontend/vercel.json` and replace `YOUR_RAILWAY_URL_HERE` with your actual Railway backend URL (e.g., `straw-ledger-backend.up.railway.app`). **Do not include `https://` in the replacement if you leave the `https://` in the JSON, just the domain.**
+2. Commit and push this change to GitHub.
+3. Create a new project on [Vercel](https://vercel.com) and import your GitHub repository.
+4. Set the **Root Directory** to `frontend`.
+5. Set the **Output Directory** to `dist`.
+6. Click **Deploy**. Vercel will serve your static files and automatically proxy all `/api/*` requests to your Railway backend!
 
 ## Frontend — Setup & Run
 
@@ -169,7 +199,7 @@ The frontend is built with Vanilla HTML, CSS, and JS. It connects to the FastAPI
 
 ### 2. Run the frontend
 You can use any local web server. For example, using Python:
-`ash
+` ash
 cd straw-ledger/frontend
 python -m http.server 5500
 `

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Straw Ledger — Digital Feedstock Aggregation, Carbon &amp; MRV Platform</title>
+  <meta name="description" content="The Straw Ledger connects farmers, straw batches, collection zones and pyrolysis facilities into one auditable carbon-removal pipeline." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9a441' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b' stroke='none'/%3E%3Cpath d='M12 20V8'/%3E%3Cpath d='M12 8c0-3 2-5 5-5 0 3-2 5-5 5Z'/%3E%3Cpath d='M12 8C12 5 10 3 7 3c0 3 2 5 5 5Z'/%3E%3Cpath d='M12 14c0-2.4 1.6-4 4-4 0 2.4-1.6 4-4 4Z'/%3E%3Cpath d='M12 14c0-2.4-1.6-4-4-4 0 2.4 1.6 4 4 4Z'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="home">
+
+  <!-- Top bar -->
+  <header class="landing-top">
+    <a class="landing-brand" href="index.html">
+      <span class="landing-brand__mark" id="brandMark"></span>
+      <span>
+        <span class="landing-brand__name">The Straw Ledger</span>
+        <span class="landing-brand__sub">Feedstock · Carbon · MRV</span>
+      </span>
+    </a>
+    <nav class="landing-nav" aria-label="Landing">
+      <a href="#platform-flow">Platform flow</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#modules">Modules</a>
+      <a href="pages/mrv-ledger.html">MRV Ledger</a>
+    </nav>
+    <a class="btn btn--gold btn--sm" href="pages/operator-dashboard.html">
+      <span id="ctaIcon"></span> Operator Console
+    </a>
+  </header>
+
+  <!-- Hero: the pipeline itself -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div>
+        <span class="kicker">Digital feedstock aggregation · Carbon &amp; MRV</span>
+        <h1>From field residue to <em>verified</em> carbon removal.</h1>
+        <p class="hero__lede">
+          The Straw Ledger registers farmer straw batches, aggregates them into
+          collection zones, routes them to pyrolysis facilities, and records every
+          tonne of CO₂e and every rupee of value in an auditable MRV ledger.
+        </p>
+        <div class="hero__ctas">
+          <a class="btn btn--gold btn--lg" href="pages/operator-dashboard.html"><span id="ctaIcon2"></span> Open Operator Dashboard</a>
+          <a class="btn btn--light btn--lg" href="pages/farmer-onboarding.html"><span id="ctaIcon3"></span> Register a Straw Batch</a>
+        </div>
+      </div>
+
+      <div class="flowboard" id="flowboard" aria-label="Platform pipeline">
+        <div class="flowboard__head">
+          <span class="flowboard__title">Live pipeline · Punjab cluster</span>
+          <span class="live-pill"><i></i>LEDGER SYNC</span>
+        </div>
+        <div id="flowNodes">
+          <!-- populated by js/index.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stat strip -->
+  <div class="stat-strip reveal">
+    <div class="stat-strip__card" id="statStrip">
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">Farmers onboarded</div></div>
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">Straw batches</div></div>
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">Straw registered</div></div>
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">Est. biochar</div></div>
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">CO₂e potential</div></div>
+      <div class="stat-cell"><div class="stat-cell__v">—</div><div class="stat-cell__k">MRV verified</div></div>
+    </div>
+  </div>
+
+  <!-- Platform flow -->
+  <section class="landing-section" id="platform-flow">
+    <div class="landing-section__head reveal">
+      <span class="kicker">The platform flow</span>
+      <h2>One continuous chain of custody</h2>
+      <p>Every record in the ledger carries its full path — from the farmer who registered the straw to the verification event that closed the loop.</p>
+    </div>
+    <div class="trace reveal" id="platformTrace"></div>
+  </section>
+
+  <!-- Capabilities -->
+  <section class="landing-section" id="capabilities">
+    <div class="landing-section__head reveal">
+      <span class="kicker">Core capabilities</span>
+      <h2>Built for the operator who owns the pipeline</h2>
+      <p>Four capabilities cover the entire journey of a tonne of straw — registration, aggregation, conversion economics and assurance.</p>
+    </div>
+    <div class="ledger-rows reveal" id="capabilityRows"></div>
+  </section>
+
+  <!-- Modules -->
+  <section class="landing-section" id="modules">
+    <div class="landing-section__head reveal">
+      <span class="kicker">Application modules</span>
+      <h2>Enter the console</h2>
+      <p>Each module below opens a dedicated workspace inside the operator console.</p>
+    </div>
+    <div class="module-grid reveal" id="moduleGrid"></div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="landing-footer__inner">
+      <span>© <span id="yearNow"></span> The Straw Ledger · Digital Feedstock Aggregation, Carbon &amp; MRV Platform</span>
+      <span>
+        <a href="pages/operator-dashboard.html">Dashboard</a>
+        <a href="pages/feedstock-flow.html">Flow map</a>
+        <a href="pages/mrv-ledger.html">MRV</a>
+      </span>
+    </div>
+  </footer>
+
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

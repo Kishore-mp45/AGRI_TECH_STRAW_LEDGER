@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmer Onboarding · The Straw Ledger</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23122b1b'/%3E%3Cpath d='M12 20V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 0C12 5 10 3 7 3c0 3 2 5 5 5Z' stroke='%23d9a441' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body data-page="onboarding" data-group="Operations" data-title="Farmer Onboarding" data-short="Onboarding"
+      data-subtitle="Register a farmer and their straw batch in one pass">
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="grid onboard-grid">
+          <!-- Form column -->
+          <div id="formColumn">
+            <form id="onboardForm" novalidate>
+              <!-- 1 · Farmer details -->
+              <section class="form-section reveal is-in">
+                <div class="form-section__head">
+                  <span class="form-section__num">01</span>
+                  <div>
+                    <div class="form-section__title">Farmer details</div>
+                    <div class="form-section__sub">Who owns the straw — used for payout and traceability.</div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="farmer_name">Full name <span class="req">*</span></label>
+                    <input class="form-control" id="farmer_name" name="name" type="text" placeholder="e.g. Harpreet Singh" autocomplete="off" />
+                    <span class="form-error" data-error="farmer_name"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="farmer_phone">Mobile number <span class="req">*</span></label>
+                    <input class="form-control" id="farmer_phone" name="phone" type="tel" placeholder="+91 …" autocomplete="off" />
+                    <span class="form-error" data-error="farmer_phone"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="village">Village <span class="req">*</span></label>
+                    <input class="form-control" id="village" name="village" type="text" placeholder="e.g. Jagraon" autocomplete="off" />
+                    <span class="form-error" data-error="village"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="district">District <span class="req">*</span></label>
+                    <input class="form-control" id="district" name="district" type="text" placeholder="e.g. Ludhiana" autocomplete="off" />
+                    <span class="form-error" data-error="district"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="state">State <span class="req">*</span></label>
+                    <input class="form-control" id="state" name="state" type="text" placeholder="e.g. Punjab" autocomplete="off" />
+                    <span class="form-error" data-error="state"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 2 · Plot location -->
+              <section class="form-section reveal is-in">
+                <div class="form-section__head">
+                  <span class="form-section__num">02</span>
+                  <div>
+                    <div class="form-section__title">Plot location</div>
+                    <div class="form-section__sub">Coordinates drive nearby-batch discovery and zone assignment.</div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="latitude">Latitude <span class="req">*</span></label>
+                    <input class="form-control" id="latitude" name="latitude" type="number" step="any" placeholder="e.g. 30.8910" inputmode="decimal" />
+                    <span class="form-hint">Decimal degrees · −90 to 90</span>
+                    <span class="form-error" data-error="latitude"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="longitude">Longitude <span class="req">*</span></label>
+                    <input class="form-control" id="longitude" name="longitude" type="number" step="any" placeholder="e.g. 75.8310" inputmode="decimal" />
+                    <span class="form-hint">Decimal degrees · −180 to 180</span>
+                    <span class="form-error" data-error="longitude"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="plot_area_acres">Plot area (acres) <span class="req">*</span></label>
+                    <input class="form-control" id="plot_area_acres" name="plot_area_acres" type="number" step="0.1" min="0.1" placeholder="e.g. 6.5" inputmode="decimal" />
+                    <span class="form-error" data-error="plot_area_acres"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 3 · Straw batch -->
+              <section class="form-section reveal is-in">
+                <div class="form-section__head">
+                  <span class="form-section__num">03</span>
+                  <div>
+                    <div class="form-section__title">Straw batch</div>
+                    <div class="form-section__sub">Volume, crop and harvest timing for this registration.</div>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="crop_type">Crop type <span class="req">*</span></label>
+                    <select class="form-control" id="crop_type" name="crop_type">
+                      <option value="">Select crop…</option>
+                      <option value="Rice (Paddy)">Rice (Paddy)</option>
+                      <option value="Wheat">Wheat</option>
+                      <option value="Maize">Maize</option>
+                      <option value="Cotton">Cotton</option>
+                      <option value="Sugarcane">Sugarcane</option>
+                    </select>
+                    <span class="form-error" data-error="crop_type"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="straw_volume_t">Straw volume (tonnes) <span class="req">*</span></label>
+                    <input class="form-control" id="straw_volume_t" name="straw_volume_t" type="number" step="0.1" min="0.1" placeholder="e.g. 8.5" inputmode="decimal" />
+                    <span class="form-error" data-error="straw_volume_t"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="moisture_pct">Moisture content (%)</label>
+                    <input class="form-control" id="moisture_pct" name="moisture_pct" type="number" step="0.1" min="0" max="60" placeholder="e.g. 12" inputmode="decimal" />
+                    <span class="form-hint">Optional · typical range 10–15%</span>
+                    <span class="form-error" data-error="moisture_pct"></span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="harvest_date">Harvest date <span class="req">*</span></label>
+                    <input class="form-control" id="harvest_date" name="harvest_date" type="date" />
+                    <span class="form-error" data-error="harvest_date"></span>
+                  </div>
+                </div>
+              </section>
+
+              <div id="formAlert"></div>
+              <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:6px">
+                <button type="button" class="btn btn--ghost" id="resetBtn">Clear form</button>
+                <button type="submit" class="btn btn--gold btn--lg" id="submitBtn">
+                  <span id="submitIcon"></span> Register farmer &amp; batch
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Rail -->
+          <aside class="onboard-rail">
+            <section class="card card--pad">
+              <div class="card__title" style="margin-bottom:6px">Registration steps</div>
+              <div id="stepRail">
+                <div class="step-rail__item is-active" data-step="1"><span class="step-rail__dot">1</span><div><b>Farmer details</b><span>Identity &amp; contact</span></div></div>
+                <div class="step-rail__item" data-step="2"><span class="step-rail__dot">2</span><div><b>Plot location</b><span>Coordinates &amp; area</span></div></div>
+                <div class="step-rail__item" data-step="3"><span class="step-rail__dot">3</span><div><b>Straw batch</b><span>Volume &amp; harvest</span></div></div>
+              </div>
+            </section>
+
+            <section class="card card--pad">
+              <div class="card__title" style="margin-bottom:10px">Live summary</div>
+              <div class="dlist" id="liveSummary">
+                <div class="dlist__row"><span class="dlist__k">Farmer</span><span class="dlist__v muted">—</span></div>
+                <div class="dlist__row"><span class="dlist__k">Location</span><span class="dlist__v muted">—</span></div>
+                <div class="dlist__row"><span class="dlist__k">Straw volume</span><span class="dlist__v muted">—</span></div>
+                <div class="dlist__row"><span class="dlist__k">Harvest</span><span class="dlist__v muted">—</span></div>
+              </div>
+            </section>
+
+            <section class="card card--pad">
+              <div class="alert alert--info" style="border:none;padding:0;background:none">
+                <span id="helpIcon"></span>
+                <div>
+                  <b style="display:block;margin-bottom:2px">Field tip</b>
+                  <span class="small">Coordinates can be read from any phone GPS app while standing on the plot. Accuracy within ~50 m is enough for zone grouping.</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <!-- Success panel (hidden until created) -->
+        <div id="successWrap" class="hidden">
+          <section class="card">
+            <div class="success-panel">
+              <div class="success-panel__icon" id="successIcon"></div>
+              <h2>Batch registered on the ledger</h2>
+              <p class="muted" style="margin-top:8px">The farmer and straw batch were created successfully. Keep this batch ID for collection scheduling.</p>
+              <div><span class="batch-id-chip" id="newBatchId">—</span></div>
+              <p class="small muted" id="successMeta"></p>
+              <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+                <button class="btn btn--primary" id="againBtn">Register another</button>
+                <a class="btn btn--ghost" href="collection-routing.html">Find nearby batches</a>
+                <a class="btn btn--ghost" href="operator-dashboard.html">Back to dashboard</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span id="navToggleIcon"></span></button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/farmer-onboarding.js"></script>
+</body>
+</html>
