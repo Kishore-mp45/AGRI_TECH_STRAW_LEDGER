@@ -55,12 +55,18 @@
     }
     if (!res.ok) {
       let detail = '';
-      try { detail = (await res.json()).detail || ''; } catch (e) { /* ignore */ }
+      try {
+        const errorPayload = await res.json();
+        detail = errorPayload.detail || errorPayload.message || '';
+      } catch (e) { /* ignore */ }
       throw new ApiError(detail || `Request failed with status ${res.status}`, res.status);
     }
     if (res.status === 204) return null;
     const text = await res.text();
-    return text ? JSON.parse(text) : null;
+    const payload = text ? JSON.parse(text) : null;
+    return payload && payload.success === true && Object.prototype.hasOwnProperty.call(payload, 'data')
+      ? payload.data
+      : payload;
   }
 
   /* Try the real endpoint; fall back to sample data only when allowed. */
