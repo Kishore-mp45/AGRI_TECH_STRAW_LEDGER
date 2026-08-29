@@ -167,18 +167,23 @@ Your cloud database is already hosted on Supabase.
 1. Ensure your `schema.sql` and `seed.sql` have been applied via the Supabase SQL Editor.
 2. Go to **Project Settings -> Database** to get your connection string.
 
-### 2. Backend (Render)
-The backend is configured via the `render.yaml` file at the root.
+### 2. Backend (Render Free Tier)
+We will deploy this manually as a standard free "Web Service".
 
 1. Create an account on [Render](https://render.com/).
-2. Go to the Dashboard and click **New -> Blueprint**.
+2. Go to the Dashboard and click **New -> Web Service**.
 3. Connect your GitHub repository.
-4. Render will automatically detect `render.yaml` and provision the Web Service.
-5. In the Render Dashboard, click on your new Web Service -> **Environment**.
-6. Enter your secrets for:
+4. On the setup screen, fill in exactly these details:
+   - **Root Directory**: `backend`
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Scroll down and click **Advanced** -> **Add Environment Variables**. Add the following:
    - `DATABASE_URL` (Your Supabase postgresql connection string)
-   - `SUPABASE_URL`
-   - `SUPABASE_API_KEY`
+   - `SUPABASE_URL` (Your Supabase project URL)
+   - `SUPABASE_API_KEY` (Your Supabase secret role key)
+   - `APP_ENV` = `production`
+6. Click **Create Web Service**.
 7. Render will deploy your API and provide a public URL (e.g. `https://straw-ledger-backend.onrender.com`).
 
 ### 3. Frontend (Vercel)
