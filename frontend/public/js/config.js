@@ -8,11 +8,13 @@ const isLocalFrontend = window.location.protocol === 'file:' || localHostnames.i
 window.STRAW_LEDGER_CONFIG = {
   /*
    * Base URL of the existing FastAPI backend.
-  * Hosted pages use the Vercel rewrite to reach Render. Local pages call the
-  * development backend directly.
+  * Hosted pages call Render directly so Vercel deployment protection cannot
+  * intercept API requests. Local pages call the development backend directly.
    * Can be overridden at runtime via localStorage key STRAW_LEDGER_API_BASE.
    */
-  API_BASE_URL: isLocalFrontend ? 'http://127.0.0.1:8010/api/v1' : '/api/v1',
+  API_BASE_URL: isLocalFrontend
+    ? 'http://127.0.0.1:8010/api/v1'
+    : 'https://agri-tech-straw-ledger.onrender.com/api/v1',
 
   /*
    * When true (and ONLY when the backend cannot be reached), the API layer

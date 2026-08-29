@@ -41,7 +41,11 @@ class Settings(BaseSettings):
     supabase_api_key: str = ""
 
     # CORS
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:5500"
+    cors_origins: str = (
+        "http://localhost:3000,http://127.0.0.1:5500,"
+        "https://agri-tech-straw-ledger-8jor-khly09sdf.vercel.app,"
+        "https://agri-tech-straw-git-d5a2a6-kishoremuthupalani45-7363s-projects.vercel.app"
+    )
 
     # Logging
     log_level: str = "INFO"
