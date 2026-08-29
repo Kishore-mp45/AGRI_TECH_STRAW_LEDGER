@@ -1,0 +1,1 @@
+"""Straw Ledger FastAPI application package."""
