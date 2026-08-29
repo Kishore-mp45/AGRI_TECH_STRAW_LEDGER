@@ -66,6 +66,8 @@ class BatchSummary(BaseSchema):
     farmer_name: str
     plot_name: str
     province: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     harvest_date: str
     straw_volume_ton: float
     status: str

@@ -29,8 +29,8 @@
         <div class="dlist__row"><span class="dlist__k">Batch ID</span><span class="dlist__v mono">${b.id}</span></div>
         <div class="dlist__row"><span class="dlist__k">Farmer</span><span class="dlist__v">${b.farmer_name}</span></div>
         <div class="dlist__row"><span class="dlist__k">Plot</span><span class="dlist__v">${b.village}, ${b.district}</span></div>
-        <div class="dlist__row"><span class="dlist__k">Latitude</span><span class="dlist__v mono">${b.latitude.toFixed(5)}</span></div>
-        <div class="dlist__row"><span class="dlist__k">Longitude</span><span class="dlist__v mono">${b.longitude.toFixed(5)}</span></div>
+        <div class="dlist__row"><span class="dlist__k">Latitude</span><span class="dlist__v mono">${Number.isFinite(b.latitude) ? b.latitude.toFixed(5) : 'Not registered'}</span></div>
+        <div class="dlist__row"><span class="dlist__k">Longitude</span><span class="dlist__v mono">${Number.isFinite(b.longitude) ? b.longitude.toFixed(5) : 'Not registered'}</span></div>
         <div class="dlist__row"><span class="dlist__k">Straw volume</span><span class="dlist__v mono">${fmt.tonnes(b.straw_volume_t, 1)}</span></div>
         <div class="dlist__row"><span class="dlist__k">Crop</span><span class="dlist__v">${b.crop_type}</span></div>
         <div class="dlist__row"><span class="dlist__k">Harvest</span><span class="dlist__v">${fmt.date(b.harvest_date)}</span></div>

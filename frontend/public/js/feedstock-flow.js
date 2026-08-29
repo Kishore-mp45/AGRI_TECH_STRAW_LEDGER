@@ -96,6 +96,7 @@
       clearMarkers();
 
       batches.forEach((b) => {
+        if (!Number.isFinite(b.latitude) || !Number.isFinite(b.longitude)) return;
         const m = new window.maplibregl.Marker({ element: UI.markerEl('batch') })
           .setLngLat([b.longitude, b.latitude])
           .setPopup(new window.maplibregl.Popup({ offset: 18 }).setHTML(UI.popupHTML(b.id, [
