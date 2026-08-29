@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://YOUR_RAILWAY_URL_HERE/api/$1"
+      "destination": "https://agri-tech-straw-ledger.onrender.com/api/$1"
     }
   ],
   "cleanUrls": true,
