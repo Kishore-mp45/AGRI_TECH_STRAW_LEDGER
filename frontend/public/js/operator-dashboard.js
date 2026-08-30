@@ -12,6 +12,14 @@
   let dashMap = null;
   let dashMarkers = [];
 
+  function coordinatesOf(item) {
+    const longitude = Number(item && (item.longitude ?? item.hub_longitude));
+    const latitude = Number(item && (item.latitude ?? item.hub_latitude));
+    return Number.isFinite(longitude) && Number.isFinite(latitude)
+      ? { longitude, latitude }
+      : null;
+  }
+
   /* ---------------- KPI row ---------------- */
   function renderKpis(t, mrv) {
     const kpis = [
@@ -128,8 +136,10 @@
       dashMarkers = [];
 
       (window.__dashBatches || []).forEach((b) => {
+        const point = coordinatesOf(b);
+        if (!point) return;
         const m = new window.maplibregl.Marker({ element: UI.markerEl('batch') })
-          .setLngLat([b.longitude, b.latitude])
+          .setLngLat([point.longitude, point.latitude])
           .setPopup(new window.maplibregl.Popup({ offset: 18 }).setHTML(UI.popupHTML(`${b.id}`, [
             ['Farmer', b.farmer_name], ['Village', `${b.village}, ${b.district}`],
             ['Volume', fmt.tonnes(b.straw_volume_t, 1)], ['Harvest', fmt.date(b.harvest_date)]
@@ -139,8 +149,10 @@
       });
 
       zones.forEach((z) => {
+        const point = coordinatesOf(z);
+        if (!point) return;
         const m = new window.maplibregl.Marker({ element: UI.markerEl('zone') })
-          .setLngLat([z.longitude, z.latitude])
+          .setLngLat([point.longitude, point.latitude])
           .setPopup(new window.maplibregl.Popup({ offset: 20 }).setHTML(UI.popupHTML(z.zone_name || z.zone_code, [
             ['Batches', z.assigned_batch_count], ['Aggregated', fmt.tonnes(z.aggregated_straw_ton, 1)], ['Facility', z.facility_name]
           ])))
@@ -149,8 +161,10 @@
       });
 
       facilities.forEach((f) => {
+        const point = coordinatesOf(f);
+        if (!point) return;
         const m = new window.maplibregl.Marker({ element: UI.markerEl('facility') })
-          .setLngLat([f.longitude, f.latitude])
+          .setLngLat([point.longitude, point.latitude])
           .setPopup(new window.maplibregl.Popup({ offset: 20 }).setHTML(UI.popupHTML(f.name, [
             ['Capacity', `${f.capacity_t_per_day} t/day`], ['Technology', f.technology]
           ])))
@@ -162,11 +176,15 @@
       const lineFeatures = [];
       (window.__dashBatches || []).forEach((b) => {
         const z = zones.find((x) => x.zone_id === b.zone_id);
-        if (z) lineFeatures.push({ type: 'Feature', properties: { kind: 'plot-zone' }, geometry: { type: 'LineString', coordinates: [[b.longitude, b.latitude], [z.longitude, z.latitude]] } });
+        const batchPoint = coordinatesOf(b);
+        const zonePoint = coordinatesOf(z);
+        if (batchPoint && zonePoint) lineFeatures.push({ type: 'Feature', properties: { kind: 'plot-zone' }, geometry: { type: 'LineString', coordinates: [[batchPoint.longitude, batchPoint.latitude], [zonePoint.longitude, zonePoint.latitude]] } });
       });
       zones.forEach((z) => {
         const f = facilities.find((x) => x.id === z.facility_id);
-        if (f) lineFeatures.push({ type: 'Feature', properties: { kind: 'zone-facility' }, geometry: { type: 'LineString', coordinates: [[z.longitude, z.latitude], [f.longitude, f.latitude]] } });
+        const zonePoint = coordinatesOf(z);
+        const facilityPoint = coordinatesOf(f);
+        if (zonePoint && facilityPoint) lineFeatures.push({ type: 'Feature', properties: { kind: 'zone-facility' }, geometry: { type: 'LineString', coordinates: [[zonePoint.longitude, zonePoint.latitude], [facilityPoint.longitude, facilityPoint.latitude]] } });
       });
 
       if (map.getSource('dash-flow')) {
@@ -180,9 +198,9 @@
       }
 
       const pts = [];
-      (window.__dashBatches || []).forEach((b) => pts.push([b.longitude, b.latitude]));
-      zones.forEach((z) => pts.push([z.hub_longitude, z.hub_latitude]));
-      facilities.forEach((f) => pts.push([f.longitude, f.latitude]));
+      (window.__dashBatches || []).forEach((b) => { const point = coordinatesOf(b); if (point) pts.push([point.longitude, point.latitude]); });
+      zones.forEach((z) => { const point = coordinatesOf(z); if (point) pts.push([point.longitude, point.latitude]); });
+      facilities.forEach((f) => { const point = coordinatesOf(f); if (point) pts.push([point.longitude, point.latitude]); });
       UI.fitPoints(map, pts, 80);
 
       document.getElementById('dashLegend').innerHTML = `
