@@ -50,9 +50,9 @@
   };
 
   /* ---------------- Formatters ---------------- */
-  const locale = CFG.LOCALE || 'en-IN';
+  const locale = CFG.LOCALE || 'vi-VN';
   const nf = (d) => new Intl.NumberFormat(locale, { maximumFractionDigits: d == null ? 1 : d, minimumFractionDigits: 0 });
-  const moneyFmt = new Intl.NumberFormat(locale, { style: 'currency', currency: CFG.CURRENCY || 'INR', maximumFractionDigits: 0 });
+  const moneyFmt = new Intl.NumberFormat(locale, { style: 'currency', currency: CFG.CURRENCY || 'VND', maximumFractionDigits: 0 });
 
   const fmt = {
     num: (n, d) => (n == null || isNaN(n) ? '—' : nf(d).format(n)),
@@ -62,8 +62,8 @@
     moneyCompact: (n) => {
       if (n == null || isNaN(n)) return '—';
       const abs = Math.abs(n);
-      if (abs >= 1e7) return `₹${nf(2).format(n / 1e7)} Cr`;
-      if (abs >= 1e5) return `₹${nf(2).format(n / 1e5)} L`;
+      if (abs >= 1e9) return `${moneyFmt.format(n / 1e9)} tỷ`;
+      if (abs >= 1e6) return `${moneyFmt.format(n / 1e6)} triệu`;
       return moneyFmt.format(n);
     },
     km: (n) => (n == null || isNaN(n) ? '—' : `${nf(1).format(n)} km`),

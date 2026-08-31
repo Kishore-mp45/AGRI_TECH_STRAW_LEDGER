@@ -34,25 +34,22 @@ logger = logging.getLogger(__name__)
 def _build_feedstock(db: Session, facility_id: Optional[str] = None) -> FeedstockSummary:
     """Aggregate feedstock availability across all (or a single) facility."""
 
-    # totals
     totals_sql = text("""
         SELECT
             COUNT(*)                           AS total_registered,
-            COUNT(*) FILTER (WHERE sb.status IN ('pending','registered','collected'))
-                                               AS total_available,
+            COUNT(*) FILTER (WHERE sb.status IN ('pending','registered','collected')) AS total_available,
             COALESCE(SUM(sb.straw_volume_ton), 0) AS total_vol
         FROM straw_batches sb
     """)
     r = dict(db.execute(totals_sql).mappings().fetchone())
 
-    # per-zone breakdown via routing_assignments
     zone_sql = text("""
         SELECT
             cz.id::text                              AS zone_id,
             cz.zone_code,
             cz.zone_name,
             cz.province,
-            COUNT(ra.batch_id)                       AS batch_count,
+            COUNT(DISTINCT ra.batch_id)              AS batch_count,
             COALESCE(SUM(sb.straw_volume_ton), 0)    AS total_straw_ton
         FROM collection_zones cz
         LEFT JOIN routing_assignments ra ON ra.collection_zone_id = cz.id
@@ -63,15 +60,33 @@ def _build_feedstock(db: Session, facility_id: Optional[str] = None) -> Feedstoc
     """)
     zone_rows = db.execute(zone_sql).mappings().fetchall()
 
+    if not zone_rows:
+        fallback_zone_sql = text("""
+            SELECT
+                pl.province AS province,
+                'UNASSIGNED'::text AS zone_code,
+                'Unassigned batches'::text AS zone_name,
+                COUNT(sb.id) AS batch_count,
+                COALESCE(SUM(sb.straw_volume_ton), 0) AS total_straw_ton
+            FROM straw_batches sb
+            LEFT JOIN plot_locations pl ON pl.id = sb.plot_id
+            WHERE sb.status IN ('pending', 'registered', 'collected')
+            GROUP BY pl.province
+            ORDER BY total_straw_ton DESC
+        """)
+        zone_rows = db.execute(fallback_zone_sql).mappings().fetchall()
+        for row in zone_rows:
+            row["zone_id"] = f"zone-{row['province'] or 'unassigned'}"
+
     return FeedstockSummary(
         total_registered_batches=int(r["total_registered"]),
         total_available_batches=int(r["total_available"]),
         total_straw_volume_ton=float(r["total_vol"]),
         by_zone=[
             ZoneFeedstockBreakdown(
-                zone_id=z["zone_id"],
-                zone_code=z["zone_code"],
-                zone_name=z["zone_name"],
+                zone_id=str(z["zone_id"]),
+                zone_code=str(z["zone_code"]),
+                zone_name=str(z["zone_name"]),
                 province=z.get("province"),
                 batch_count=int(z["batch_count"]),
                 total_straw_ton=float(z["total_straw_ton"]),
@@ -104,9 +119,10 @@ def _build_routing(db: Session) -> RoutingSummary:
             pf.facility_name,
             pf.facility_code
         FROM collection_zones cz
-        JOIN routing_assignments ra ON ra.collection_zone_id = cz.id
-        JOIN straw_batches sb       ON sb.id = ra.batch_id
+        LEFT JOIN routing_assignments ra ON ra.collection_zone_id = cz.id
+        LEFT JOIN straw_batches sb       ON sb.id = ra.batch_id
         LEFT JOIN pyrolysis_facilities pf ON pf.id = ra.facility_id
+        WHERE cz.is_active = TRUE
         GROUP BY cz.id, cz.zone_code, cz.zone_name, cz.province,
                  cz.center_lat, cz.center_lon, pf.facility_name, pf.facility_code
         ORDER BY aggregated_straw_ton DESC
@@ -118,9 +134,9 @@ def _build_routing(db: Session) -> RoutingSummary:
         total_routed_straw_ton=float(r["total_routed_vol"]),
         zones=[
             ZoneRoutingDetail(
-                zone_id=z["zone_id"],
-                zone_code=z["zone_code"],
-                zone_name=z["zone_name"],
+                zone_id=str(z["zone_id"]),
+                zone_code=str(z["zone_code"]),
+                zone_name=str(z["zone_name"]),
                 province=z.get("province"),
                 assigned_batch_count=int(z["assigned_batch_count"]),
                 aggregated_straw_ton=float(z["aggregated_straw_ton"]),

@@ -45,9 +45,14 @@ CREATE TABLE IF NOT EXISTS farmers (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT farmers_phone_format CHECK (phone_number ~ '^\+?[0-9]{9,15}$'),
+    CONSTRAINT farmers_phone_format CHECK (phone_number ~ '^\+?[0-9][0-9\s\-()]{8,19}$'),
     CONSTRAINT farmers_full_name_not_empty CHECK (TRIM(full_name) <> '')
 );
+
+ALTER TABLE farmers
+    DROP CONSTRAINT IF EXISTS farmers_phone_format;
+ALTER TABLE farmers
+    ADD CONSTRAINT farmers_phone_format CHECK (phone_number ~ '^\+?[0-9][0-9\s\-()]{8,19}$');
 
 COMMENT ON TABLE farmers IS 'Registered rice farmers who participate in the straw collection program.';
 COMMENT ON COLUMN farmers.bank_account IS 'Used for automated payouts in future phases.';
@@ -167,7 +172,7 @@ CREATE TABLE IF NOT EXISTS straw_batches (
     rice_variety     TEXT,
     notes            TEXT,
     status           TEXT           NOT NULL DEFAULT 'pending'
-                     CHECK (status IN ('pending', 'collected', 'processed', 'completed', 'cancelled')),
+                     CHECK (status IN ('pending', 'registered', 'collected', 'processed', 'completed', 'cancelled')),
     created_at       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 
@@ -175,9 +180,15 @@ CREATE TABLE IF NOT EXISTS straw_batches (
     CONSTRAINT straw_batches_moisture_range CHECK (moisture_pct IS NULL OR moisture_pct BETWEEN 0 AND 100)
 );
 
+ALTER TABLE straw_batches
+    DROP CONSTRAINT IF EXISTS straw_batches_status_check;
+ALTER TABLE straw_batches
+    ADD CONSTRAINT straw_batches_status_check
+    CHECK (status IN ('pending', 'registered', 'collected', 'processed', 'completed', 'cancelled'));
+
 COMMENT ON TABLE straw_batches IS 'A discrete straw harvest event from a specific farmer plot. This is the central entity - routing, calculation, and MRV all reference a batch.';
 COMMENT ON COLUMN straw_batches.straw_volume_ton IS 'Estimated straw volume in metric tonnes at time of harvest.';
-COMMENT ON COLUMN straw_batches.status IS 'Lifecycle: pending -> collected -> processed -> completed. Can be cancelled at any stage.';
+COMMENT ON COLUMN straw_batches.status IS 'Lifecycle: pending -> registered -> collected -> processed -> completed. Can be cancelled at any stage.';
 
 -- =============================================================================
 -- 7. ROUTING ASSIGNMENTS
@@ -313,30 +324,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_farmers_updated_at ON farmers;
 CREATE TRIGGER trg_farmers_updated_at
     BEFORE UPDATE ON farmers
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_pyrolysis_operators_updated_at ON pyrolysis_operators;
 CREATE TRIGGER trg_pyrolysis_operators_updated_at
     BEFORE UPDATE ON pyrolysis_operators
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_pyrolysis_facilities_updated_at ON pyrolysis_facilities;
 CREATE TRIGGER trg_pyrolysis_facilities_updated_at
     BEFORE UPDATE ON pyrolysis_facilities
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_plot_locations_updated_at ON plot_locations;
 CREATE TRIGGER trg_plot_locations_updated_at
     BEFORE UPDATE ON plot_locations
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_straw_batches_updated_at ON straw_batches;
 CREATE TRIGGER trg_straw_batches_updated_at
     BEFORE UPDATE ON straw_batches
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_routing_assignments_updated_at ON routing_assignments;
 CREATE TRIGGER trg_routing_assignments_updated_at
     BEFORE UPDATE ON routing_assignments
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_mrv_records_updated_at ON mrv_records;
 CREATE TRIGGER trg_mrv_records_updated_at
     BEFORE UPDATE ON mrv_records
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();

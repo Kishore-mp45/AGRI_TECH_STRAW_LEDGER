@@ -17,14 +17,14 @@
     { key: 'collected_straw_t', label: 'Collected straw', unit: 't', icon: 'route', cls: '' },
     { key: 'biochar_t', label: 'Biochar produced', unit: 't', icon: 'flame', cls: 'flow-step--gold' },
     { key: 'co2e_t', label: 'CO₂e sequestered', unit: 'tCO₂e', icon: 'cloud', cls: 'flow-step--dark' },
-    { key: 'gross_value_inr', label: 'Gross value', unit: 'INR', icon: 'coins', cls: 'flow-step--gold' },
-    { key: 'production_cost_inr', label: 'Production cost', unit: 'INR', icon: 'factory', cls: '' },
-    { key: 'margin_pool_inr', label: 'Margin pool', unit: 'INR', icon: 'scale', cls: 'flow-step--gold' },
-    { key: 'farmer_payout_inr', label: 'Farmer payout', unit: 'INR', icon: 'farmer', cls: 'flow-step--dark' }
+    { key: 'gross_value_inr', label: 'Gross value', unit: 'VND', icon: 'coins', cls: 'flow-step--gold' },
+    { key: 'production_cost_inr', label: 'Production cost', unit: 'VND', icon: 'factory', cls: '' },
+    { key: 'margin_pool_inr', label: 'Margin pool', unit: 'VND', icon: 'scale', cls: 'flow-step--gold' },
+    { key: 'farmer_payout_inr', label: 'Farmer payout', unit: 'VND', icon: 'farmer', cls: 'flow-step--dark' }
   ];
 
   function fmtUnit(v, unit) {
-    if (unit === 'INR') return fmt.money(v);
+    if (unit === 'VND') return fmt.money(v);
     if (unit === 'tCO₂e') return fmt.co2e(v, 2);
     return fmt.tonnes(v, 2);
   }
@@ -44,7 +44,7 @@
       `System constants — collection efficiency <b class="mono">${Math.round((c.COLLECTION_EFFICIENCY || 0.85) * 100)}%</b> · ` +
       `biochar yield <b class="mono">${Math.round((c.BIOCHAR_YIELD || 0.3) * 100)}%</b> · ` +
       `CDR factor <b class="mono">${c.CDR_FACTOR || 2.5} tCO₂e/t</b> · ` +
-      `biochar price <b class="mono">${fmt.money(c.BIOCHAR_PRICE_INR || 0)}/t</b> · ` +
+      `biochar price <b class="mono">${fmt.money(c.BIOCHAR_PRICE_VND || c.BIOCHAR_PRICE_INR || 0)}/t</b> · ` +
       `farmer share <b class="mono">${Math.round((c.FARMER_SHARE || 0.4) * 100)}%</b> of margin pool. Backend values take precedence.`;
   }
 

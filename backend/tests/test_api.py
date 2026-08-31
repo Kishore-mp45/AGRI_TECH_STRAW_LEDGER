@@ -37,13 +37,14 @@ def test_missing_required_fields_onboard(client):
 
 def test_successful_onboard(client):
     """Test successful farmer onboarding via API."""
+    import uuid
+    unique_id = str(uuid.uuid4())[:8]  # Use 8 digits to create valid 10-digit phone
     response = client.post("/api/v1/farmers/onboard", json={
-        "full_name": "Test Farmer",
-        "phone_number": "123456789",
+        "full_name": f"Test Farmer {unique_id}",
+        "phone_number": f"+84 912 {unique_id}",
         "village": "Test Village",
-        "district": "Test District",
         "province": "Test Province",
-        "plot_name": "Test Plot",
+        "plot_name": f"Test Plot {unique_id}",
         "plot_area_acres": 10.0,
         "latitude": 18.0,
         "longitude": 98.0,
@@ -55,3 +56,6 @@ def test_successful_onboard(client):
     assert data["success"] is True
     assert "farmer_id" in data["data"]
     assert "batch_code" in data["data"]
+
+
+

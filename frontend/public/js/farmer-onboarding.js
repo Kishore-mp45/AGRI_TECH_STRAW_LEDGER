@@ -9,7 +9,7 @@
   const I = UI.ICONS;
   const fmt = UI.fmt;
 
-  const FIELDS = ['farmer_name', 'farmer_phone', 'village', 'district', 'state',
+  const FIELDS = ['farmer_name', 'farmer_phone', 'village', 'province',
     'latitude', 'longitude', 'plot_area_acres', 'crop_type', 'straw_volume_t',
     'moisture_pct', 'harvest_date'];
 
@@ -17,8 +17,7 @@
     farmer_name: (v) => (!v.trim() ? 'Full name is required.' : v.trim().length < 3 ? 'Enter the full name (min 3 characters).' : ''),
     farmer_phone: (v) => (!v.trim() ? 'Mobile number is required.' : (v.replace(/\D/g, '').length < 10 ? 'Enter a valid 10-digit mobile number.' : '')),
     village: (v) => (!v.trim() ? 'Village is required.' : ''),
-    district: (v) => (!v.trim() ? 'District is required.' : ''),
-    state: (v) => (!v.trim() ? 'State is required.' : ''),
+    province: (v) => (!v.trim() ? 'Province is required.' : ''),
     latitude: (v) => {
       if (v === '') return 'Latitude is required.';
       const n = parseFloat(v);
@@ -30,7 +29,7 @@
       return isNaN(n) || n < -180 || n > 180 ? 'Longitude must be between −180 and 180.' : '';
     },
     plot_area_acres: (v) => (v === '' ? 'Plot area is required.' : parseFloat(v) <= 0 ? 'Area must be greater than zero.' : ''),
-    crop_type: (v) => (!v ? 'Select the crop type.' : ''),
+    crop_type: (v) => (!v || !v.trim() ? 'Crop type is required.' : ''),
     straw_volume_t: (v) => (v === '' ? 'Straw volume is required.' : parseFloat(v) <= 0 ? 'Volume must be greater than zero.' : ''),
     moisture_pct: (v) => {
       if (v === '') return '';
@@ -68,13 +67,13 @@
   function updateSummary() {
     const name = val('farmer_name').trim();
     const village = val('village').trim();
-    const district = val('district').trim();
+    const province = val('province').trim();
     const lat = val('latitude'); const lng = val('longitude');
     const vol = val('straw_volume_t');
     const date = val('harvest_date');
     const rows = [
       ['Farmer', name || '—'],
-      ['Location', lat && lng ? `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}` : (village || district ? `${village}${district ? ', ' + district : ''}` : '—')],
+      ['Location', lat && lng ? `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}` : (village || province ? `${village}${province ? ', ' + province : ''}` : '—')],
       ['Straw volume', vol ? fmt.tonnes(parseFloat(vol), 1) : '—'],
       ['Harvest', date ? fmt.date(date) : '—']
     ];
@@ -83,7 +82,7 @@
 
     /* Step rail state */
     const sections = [
-      ['farmer_name', 'farmer_phone', 'village', 'district', 'state'],
+      ['farmer_name', 'farmer_phone', 'village', 'province'],
       ['latitude', 'longitude', 'plot_area_acres'],
       ['crop_type', 'straw_volume_t', 'harvest_date']
     ];
@@ -108,8 +107,7 @@
         name: val('farmer_name').trim(),
         phone: val('farmer_phone').trim(),
         village: val('village').trim(),
-        district: val('district').trim(),
-        state: val('state').trim()
+        province: val('province').trim()
       },
       batch: {
         crop_type: val('crop_type'),
@@ -156,7 +154,7 @@
       document.getElementById('successIcon').innerHTML = I.check;
       document.getElementById('newBatchId').textContent = batchId;
       document.getElementById('successMeta').textContent =
-        `${val('farmer_name')} · ${val('village')}, ${val('district')} · ${fmt.tonnes(parseFloat(val('straw_volume_t')), 1)} registered`;
+        `${val('farmer_name')} · ${val('village')}, ${val('province')} · ${fmt.tonnes(parseFloat(val('straw_volume_t')), 1)} registered`;
       UI.toast(`Batch ${batchId} registered successfully.`);
       wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (err) {
@@ -173,6 +171,8 @@
   function resetForm() {
     const form = document.getElementById('onboardForm');
     form.reset();
+    const cropType = document.getElementById('crop_type');
+    if (cropType) cropType.value = 'Rice (Paddy)';
     FIELDS.forEach((f) => setError(f, ''));
     document.getElementById('formAlert').innerHTML = '';
     updateSummary();
@@ -203,9 +203,12 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    /* default harvest date: today */
+    /* default harvest date and fixed crop value */
     const hd = document.getElementById('harvest_date');
     if (hd && !hd.value) hd.value = new Date().toISOString().slice(0, 10);
+
+    const cropType = document.getElementById('crop_type');
+    if (cropType && !cropType.value) cropType.value = 'Rice (Paddy)';
 
     updateSummary();
   });

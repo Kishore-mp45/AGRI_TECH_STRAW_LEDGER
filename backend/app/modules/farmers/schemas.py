@@ -6,14 +6,15 @@ class FarmerOnboardRequest(BaseSchema):
     phone_number: str
     national_id: Optional[str] = None
     village: str
-    district: str
     province: str
-    
+    district: Optional[str] = None
+    state: Optional[str] = None
+
     plot_name: str
     plot_area_acres: float
     latitude: float
     longitude: float
-    
+
     straw_volume_ton: float
     crop_type: str = "rice"
     harvest_date: str

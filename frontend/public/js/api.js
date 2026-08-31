@@ -100,14 +100,14 @@
      backend responds). Mirrors the documented API response shapes.
      ============================================================ */
   const FARMERS = [
-    { id: 'FRM-001', name: 'Harpreet Singh', phone: '+91 98150 22317', village: 'Jagraon', district: 'Ludhiana', state: 'Punjab' },
-    { id: 'FRM-002', name: 'Gurmeet Kaur', phone: '+91 98722 41086', village: 'Raikot', district: 'Ludhiana', state: 'Punjab' },
-    { id: 'FRM-003', name: 'Amarjit Singh', phone: '+91 98140 77512', village: 'Moga Rural', district: 'Moga', state: 'Punjab' },
-    { id: 'FRM-004', name: 'Sukhdev Singh', phone: '+91 98880 13465', village: 'Nakodar', district: 'Jalandhar', state: 'Punjab' },
-    { id: 'FRM-005', name: 'Balwinder Kaur', phone: '+91 98550 60218', village: 'Sultanpur', district: 'Kapurthala', state: 'Punjab' },
-    { id: 'FRM-006', name: 'Joginder Singh', phone: '+91 98760 90341', village: 'Talwandi Sabo', district: 'Bathinda', state: 'Punjab' },
-    { id: 'FRM-007', name: 'Manpreet Singh', phone: '+91 98155 48873', village: 'Longowal', district: 'Sangrur', state: 'Punjab' },
-    { id: 'FRM-008', name: 'Rajwinder Kaur', phone: '+91 98070 35126', village: 'Samana', district: 'Patiala', state: 'Punjab' }
+    { id: 'FRM-001', name: 'Nguyễn Văn An', phone: '+84 91234 5678', village: 'Láng', province: 'Hà Nội' },
+    { id: 'FRM-002', name: 'Trần Thị Bình', phone: '+84 98765 4321', village: 'Nam Hồng', province: 'Hà Nam' },
+    { id: 'FRM-003', name: 'Phạm Quốc Cường', phone: '+84 91345 6789', village: 'Cầu Giấy', province: 'Hà Nội' },
+    { id: 'FRM-004', name: 'Lê Thị Duyên', phone: '+84 93456 7890', village: 'Đồng Tâm', province: 'Nam Định' },
+    { id: 'FRM-005', name: 'Vũ Minh Hưng', phone: '+84 95678 9012', village: 'Yên Mỹ', province: 'Hưng Yên' },
+    { id: 'FRM-006', name: 'Hoàng Bích Lan', phone: '+84 97890 1234', village: 'Bắc Giang', province: 'Bắc Giang' },
+    { id: 'FRM-007', name: 'Đỗ Đức Long', phone: '+84 98901 2345', village: 'Thái Thụy', province: 'Thái Bình' },
+    { id: 'FRM-008', name: 'Mai Kiều Oanh', phone: '+84 90123 4567', village: 'Phù Cừ', province: 'Hưng Yên' }
   ];
 
   const ZONES = [
@@ -308,10 +308,10 @@
       sampleBatchSeq += 1;
       const farmerId = 'FRM-' + String(100 + sampleBatchSeq);
       const batchId = 'SB-2024-' + String(sampleBatchSeq).padStart(4, '0');
-      const farmer = { id: farmerId, name: f.name, phone: f.phone, village: f.village, district: f.district, state: f.state };
+      const farmer = { id: farmerId, name: f.name, phone: f.phone, village: f.village, province: f.province || f.district || f.state };
       FARMERS.push(farmer);
       BATCHES.push({
-        id: batchId, farmer_id: farmerId, farmer_name: f.name, village: f.village, district: f.district,
+        id: batchId, farmer_id: farmerId, farmer_name: f.name, village: f.village, province: f.province || f.district || f.state, district: f.province || f.district || f.state,
         crop_type: b.crop_type, straw_volume_t: +b.straw_volume_t, moisture_pct: +b.moisture_pct,
         plot_area_acres: +b.plot_area_acres, latitude: +b.latitude, longitude: +b.longitude,
         harvest_date: b.harvest_date, status: 'registered', zone_id: null,
@@ -437,11 +437,18 @@
 
     /* GET carbon + economics for one batch. */
     getCalculation: async (batchId) => {
-      const calc = await withFallback(`/calculator/batch/${encodeURIComponent(batchId)}`, { method: 'POST' });
-      const b = BATCHES.find((x) => x.id === batchId) || { straw_volume_t: calc.collected_straw_ton }; // fallback
+      const response = await withFallback(`/calculator/batch/${encodeURIComponent(batchId)}`, null);
+      const calc = response.result || response;
+      const b = BATCHES.find((x) => x.id === batchId) || {
+        id: response.batch_id || batchId,
+        batch_code: response.batch_code,
+        farmer_name: response.farmer_name,
+        province: response.province,
+        straw_volume_t: calc.straw_volume_ton
+      };
       return {
         scope: 'batch',
-        straw_t: b.straw_volume_t,
+        straw_t: calc.straw_volume_ton ?? b.straw_volume_t,
         collected_straw_t: calc.collected_straw_ton,
         biochar_t: calc.biochar_yield_ton,
         co2e_t: calc.co2e_sequestered_ton,
@@ -449,6 +456,14 @@
         production_cost_inr: calc.production_cost_usd,
         margin_pool_inr: calc.margin_pool_usd,
         farmer_payout_inr: calc.farmer_payout_usd,
+        constants: {
+          COLLECTION_EFFICIENCY: (calc.collection_fraction_pct || 0) / 100,
+          BIOCHAR_YIELD: (calc.biochar_yield_pct || 0) / 100,
+          CDR_FACTOR: calc.co2_factor,
+          BIOCHAR_PRICE_VND: calc.market_value_usd_per_ton,
+          PRODUCTION_COST_VND: calc.production_cost_usd_per_ton,
+          FARMER_SHARE: (calc.farmer_share_pct || 0) / 100
+        },
         batch: b
       };
     },

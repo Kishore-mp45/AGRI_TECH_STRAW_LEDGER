@@ -119,13 +119,19 @@
   }
 
   function fillFromSummary(summary, flow) {
+    const feedstock = summary?.feedstock || {};
+    const routing = summary?.routing || {};
+    const carbon = summary?.carbon || {};
+    const mrv = summary?.mrv || {};
+    const farmersOnboarded = Number(feedstock.total_registered_batches || feedstock.total_available_batches || 0);
+
     const vals = {
-      farmers: '—', // Farm onboarding skipped in backend
-      batches: fmt.num(summary.feedstock.total_registered_batches, 0),
-      zones: fmt.num(summary.routing.zones.length, 0),
+      farmers: fmt.num(farmersOnboarded, 0),
+      batches: fmt.num(feedstock.total_registered_batches || 0, 0),
+      zones: fmt.num((routing.zones || []).length, 0),
       facilities: fmt.num((flow.facilities || []).length, 0),
-      carbon: fmt.num(summary.carbon.total_co2e_ton, 1),
-      mrv: `${summary.mrv.verified}/${summary.mrv.total_records}`
+      carbon: fmt.num(carbon.total_co2e_ton || 0, 1),
+      mrv: `${mrv.verified || 0}/${mrv.total_records || 0}`
     };
     document.querySelectorAll('[data-flow]').forEach((el) => {
       el.textContent = vals[el.dataset.flow] != null ? vals[el.dataset.flow] : '—';
@@ -135,12 +141,12 @@
     if (strip) {
       const cells = strip.querySelectorAll('.stat-cell__v');
       const data = [
-        ['—', (v) => v], // Farmers onboarded
-        [summary.feedstock.total_registered_batches, (v) => fmt.num(v, 0)],
-        [summary.feedstock.total_straw_volume_ton, (v) => fmt.tonnes(v, 1)],
-        [summary.carbon.total_biochar_ton, (v) => fmt.tonnes(v, 1)],
-        [summary.carbon.total_co2e_ton, (v) => fmt.co2e(v, 1)],
-        [summary.mrv.verified, (v) => `${fmt.num(v, 0)} rec`]
+        [farmersOnboarded, (v) => fmt.num(v, 0)],
+        [feedstock.total_registered_batches || 0, (v) => fmt.num(v, 0)],
+        [feedstock.total_straw_volume_ton || 0, (v) => fmt.tonnes(v, 1)],
+        [carbon.total_biochar_ton || 0, (v) => fmt.tonnes(v, 1)],
+        [carbon.total_co2e_ton || 0, (v) => fmt.co2e(v, 1)],
+        [mrv.verified || 0, (v) => `${fmt.num(v, 0)} rec`]
       ];
       data.forEach((d, idx) => { if (cells[idx]) UI.countUp(cells[idx], d[0], d[1], 850); });
     }

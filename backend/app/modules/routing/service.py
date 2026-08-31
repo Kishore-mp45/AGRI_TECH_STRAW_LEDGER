@@ -79,11 +79,11 @@ def find_nearby_batches(target_batch_id: str, db: Session) -> NearbyBatchGroup:
             pl.plot_name,
             f.full_name as farmer_name,
             (
-                6371 * acos(
+                6371 * acos(LEAST(1, GREATEST(-1,
                     cos(radians(:target_lat)) * cos(radians(pl.latitude)) *
                     cos(radians(pl.longitude) - radians(:target_lon)) +
                     sin(radians(:target_lat)) * sin(radians(pl.latitude))
-                )
+                )))
             ) AS distance_km
         FROM straw_batches sb
         JOIN plot_locations pl ON sb.plot_id = pl.id
@@ -94,11 +94,11 @@ def find_nearby_batches(target_batch_id: str, db: Session) -> NearbyBatchGroup:
               SELECT 1 FROM routing_assignments ra WHERE ra.batch_id = sb.id
           )
           AND (
-            6371 * acos(
+            6371 * acos(LEAST(1, GREATEST(-1,
                 cos(radians(:target_lat)) * cos(radians(pl.latitude)) *
                 cos(radians(pl.longitude) - radians(:target_lon)) +
                 sin(radians(:target_lat)) * sin(radians(pl.latitude))
-            )
+            )))
           ) <= :radius
         ORDER BY distance_km ASC
     """)
@@ -191,11 +191,11 @@ def find_best_route(batch_id: str, db: Session) -> RoutingRecommendation:
             center_lat,
             center_lon,
             (
-                6371 * acos(
+                6371 * acos(LEAST(1, GREATEST(-1,
                     cos(radians(:lat)) * cos(radians(center_lat)) *
                     cos(radians(center_lon) - radians(:lon)) +
                     sin(radians(:lat)) * sin(radians(center_lat))
-                )
+                )))
             ) AS distance_km
         FROM collection_zones
         WHERE is_active = TRUE
@@ -233,11 +233,11 @@ def find_best_route(batch_id: str, db: Session) -> RoutingRecommendation:
             JOIN pyrolysis_operators po ON pf.operator_id = po.id
             WHERE pf.is_active = TRUE
             ORDER BY (
-                6371 * acos(
+                6371 * acos(LEAST(1, GREATEST(-1,
                     cos(radians(:lat)) * cos(radians(pf.latitude)) *
                     cos(radians(pf.longitude) - radians(:lon)) +
                     sin(radians(:lat)) * sin(radians(pf.latitude))
-                )
+                )))
             ) ASC
             LIMIT 1
         """)

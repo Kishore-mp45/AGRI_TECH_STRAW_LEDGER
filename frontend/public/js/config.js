@@ -13,7 +13,7 @@ window.STRAW_LEDGER_CONFIG = {
    * Can be overridden at runtime via localStorage key STRAW_LEDGER_API_BASE.
    */
   API_BASE_URL: isLocalFrontend
-    ? 'http://127.0.0.1:8010/api/v1'
+    ? 'http://127.0.0.1:8012/api/v1'
     : 'https://agri-tech-straw-ledger.onrender.com/api/v1',
 
   /*
@@ -27,8 +27,8 @@ window.STRAW_LEDGER_CONFIG = {
   DEFAULT_RADIUS_KM: 25,
 
   /* Display locale / currency formatting. */
-  LOCALE: 'en-IN',
-  CURRENCY: 'INR',
+  LOCALE: 'vi-VN',
+  CURRENCY: 'VND',
 
   /* OpenFreeMap style for MapLibre GL (no API key required). */
   MAP_STYLE: 'https://tiles.openfreemap.org/styles/positron',
@@ -44,8 +44,8 @@ window.STRAW_LEDGER_CONFIG = {
     COLLECTION_EFFICIENCY: 0.85,   // fraction of registered straw actually collected
     BIOCHAR_YIELD: 0.30,           // tonnes biochar per tonne collected straw
     CDR_FACTOR: 2.5,               // tCO2e sequestered per tonne biochar
-    BIOCHAR_PRICE_INR: 22000,      // per tonne biochar
-    PRODUCTION_COST_INR: 9000,     // per tonne biochar
+    BIOCHAR_PRICE_VND: 650000,     // per tonne biochar, equivalent in Vietnamese dong
+    PRODUCTION_COST_VND: 270000,   // per tonne biochar, equivalent in Vietnamese dong
     FARMER_SHARE: 0.40             // fraction of margin pool paid to farmers
   },
 

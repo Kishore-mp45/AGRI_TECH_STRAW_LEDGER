@@ -42,18 +42,30 @@
   }
 
   /* ---------------- Feedstock chart ---------------- */
+  function zoneMetricValue(zone) {
+    const value = Number(zone?.total_straw_ton ?? zone?.aggregated_straw_ton ?? zone?.total_straw_volume_ton ?? zone?.total_straw_t ?? 0);
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function zoneLabel(zone) {
+    const raw = zone?.zone_name || zone?.zone_code || zone?.facility_name || 'Zone';
+    return raw.replace(' Collection Hub', '').replace(' Hub', '');
+  }
+
   function renderFeedstockChart(zones) {
     const box = document.getElementById('feedstockChartBox');
-    if (!zones.length) { UI.mountState(box, 'empty', { title: 'No zone data', message: 'Collection zones will chart once batches are aggregated.' }); return; }
+    const zoneData = (zones || []).map((z) => ({ name: zoneLabel(z), value: zoneMetricValue(z) }));
+    const hasData = zoneData.some((z) => z.value > 0);
+    if (!hasData) { UI.mountState(box, 'empty', { title: 'No zone data', message: 'Collection zones will chart once batches are aggregated.' }); return; }
     box.innerHTML = '<canvas id="feedstockChart"></canvas>';
     UI.createChart('feedstockChart', (pal) => ({
       type: 'bar',
       data: {
-        labels: zones.map((z) => z.zone_name ? z.zone_name.replace(' Collection Hub', '') : z.zone_code),
+        labels: zoneData.map((z) => z.name),
         datasets: [{
           label: 'Straw volume (t)',
-          data: zones.map((z) => z.total_straw_ton),
-          backgroundColor: zones.map((_, i) => (i % 2 ? pal.straw : pal.leaf)),
+          data: zoneData.map((z) => z.value),
+          backgroundColor: zoneData.map((_, i) => (i % 2 ? pal.straw : pal.leaf)),
           borderRadius: 6, maxBarThickness: 64
         }]
       },
@@ -88,15 +100,21 @@
   /* ---------------- Zone aggregation bars ---------------- */
   function renderZoneAgg(zones) {
     const body = document.getElementById('zoneAggBody');
-    if (!zones.length) { UI.mountState(body, 'empty', { title: 'No aggregation yet', message: 'Zones appear here once batches are assigned.' }); return; }
-    const max = Math.max(...zones.map((z) => z.total_straw_ton), 1);
-    body.innerHTML = zones.map((z) => `
-      <div class="zone-bar" title="${z.zone_name}">
-        <span class="zone-bar__name">${(z.zone_name||z.zone_code).replace(' Collection Hub', '')}</span>
-        <span class="zone-bar__track"><span class="zone-bar__fill" style="width:${Math.max(4, (z.total_straw_ton / max) * 100)}%"></span></span>
-        <span class="zone-bar__val">${fmt.num(z.total_straw_ton, 1)} t</span>
+    const zoneRows = (zones || []).map((z) => ({
+      name: zoneLabel(z),
+      value: zoneMetricValue(z),
+      batches: Number(z?.batch_count ?? z?.assigned_batch_count ?? 0),
+      province: z?.province || 'no facility'
+    })).filter((z) => z.value > 0 || z.batches > 0);
+    if (!zoneRows.length) { UI.mountState(body, 'empty', { title: 'No aggregation yet', message: 'Zones appear here once batches are assigned.' }); return; }
+    const max = Math.max(...zoneRows.map((z) => z.value), 1);
+    body.innerHTML = zoneRows.map((z) => `
+      <div class="zone-bar" title="${z.name}">
+        <span class="zone-bar__name">${z.name}</span>
+        <span class="zone-bar__track"><span class="zone-bar__fill" style="width:${Math.max(4, (z.value / max) * 100)}%"></span></span>
+        <span class="zone-bar__val">${fmt.num(z.value, 1)} t</span>
       </div>
-      <div class="small muted" style="margin:-4px 0 8px 130px">${z.batch_count} batches · ${z.province || 'no facility'}</div>`).join('');
+      <div class="small muted" style="margin:-4px 0 8px 130px">${z.batches} batches · ${z.province}</div>`).join('');
   }
 
   /* ---------------- MRV donut ---------------- */
@@ -265,10 +283,11 @@
     try {
       const [summary, batches, flow] = await Promise.all([API.getSummary(), API.getBatches(), API.getRouting()]);
       window.__dashBatches = batches;
+      const feedstockZones = summary.feedstock?.by_zone || summary.routing?.zones || [];
       renderKpis(summary, summary.mrv);
-      renderFeedstockChart(summary.routing.zones);
+      renderFeedstockChart(feedstockZones);
       renderOverview(summary);
-      renderZoneAgg(summary.routing.zones);
+      renderZoneAgg(summary.routing?.zones || feedstockZones);
       renderMrvChart(summary.mrv);
       renderBatchTable(batches);
       renderFacilityTable(flow.facilities || [], summary.routing.zones);
